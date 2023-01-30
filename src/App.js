@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import MyButton from "./components/UI/button/MyButton";
 import MyInput from "./components/UI/input/MyInput";
 import PostList from "./components/PostList";
@@ -12,19 +12,20 @@ function App() {
     {id: 3, title: 'a', body: 'b'}
   ])
 
-  const[selectedSort, setSelectedSort] = useState('')
-  const[searchQuery, setSearchQuery] = useState('')
+  const [selectedSort, setSelectedSort] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
 
-  function getSortedPosts(){
+  const sortedPosts = useMemo(() => {
     console.log('Func is worked')
-    if(selectedSort){
+    if (selectedSort) {
       return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
     }
     return posts;
-  }
+  }, [selectedSort, posts])
 
-  const sortedPosts = getSortedPosts()
-
+  const sortedAndSearchedPosts = useMemo(() => {
+    return sortedPosts.filter(post => post.title.toLowerCase().includes(searchQuery))
+  }, [searchQuery, sortedPosts])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -53,13 +54,13 @@ function App() {
       <hr style={{margin: '15px 0'}}/>
       <div>
         <MyInput
-          value = {searchQuery}
-          onChange = {e => setSearchQuery(e.target.value)}
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search..."
         />
         <MySelect
           defaultValue="Sorting by..."
-          value = {selectedSort}
+          value={selectedSort}
           onChange={sortPosts}
           options={[
             {value: 'title', name: 'By name'},
@@ -67,8 +68,8 @@ function App() {
           ]}
         />
       </div>
-      {posts.length !== 0
-        ? <PostList remove={removePost} posts={sortedPosts} title="Список постів 1"/>
+      {sortedAndSearchedPosts.length !== 0
+        ? <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Список постів 1"/>
         : <h2>posts not found!</h2>
       }
     </div>
