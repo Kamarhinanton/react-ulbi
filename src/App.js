@@ -2,14 +2,37 @@ import React, {useState} from "react";
 import MyButton from "./components/UI/button/MyButton";
 import MyInput from "./components/UI/input/MyInput";
 import PostList from "./components/PostList";
+import PostForm from "./components/PostForm";
+import MySelect from "./components/UI/select/MySelect";
 
 function App() {
   const [posts, setPosts] = useState([
-    {id: 1, title: 'JavaScript', body: 'Description'},
-    {id: 2, title: 'JavaScript 2', body: 'Description'},
-    {id: 3, title: 'JavaScript 3', body: 'Description'}
+    {id: 1, title: 'b ', body: 'c'},
+    {id: 2, title: 'c', body: 'a'},
+    {id: 3, title: 'a', body: 'b'}
   ])
-  const [post, setPost] = useState({title: '', body: ''})
+
+  const[selectedSort, setSelectedSort] = useState('')
+  const[searchQuery, setSearchQuery] = useState('')
+
+  function getSortedPosts(){
+    console.log('Func is worked')
+    if(selectedSort){
+      return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+    }
+    return posts;
+  }
+
+  const sortedPosts = getSortedPosts()
+
+
+  const createPost = (newPost) => {
+    setPosts([...posts, newPost])
+  }
+
+  const removePost = (post) => {
+    setPosts(posts.filter(p => p.id !== post.id))
+  }
   // const [title, setTitle] = useState('')
   // const [body, setBody] = useState('')
 
@@ -19,34 +42,35 @@ function App() {
   //   e.preventDefault()
   //   console.log(bodyInputRef.current.value)
   // }
-  const addNewPost = (e) => {
-    e.preventDefault()
-    setPosts([...posts, {...post, id: Date.now()}])
-    setPost({title: '', body: ''})
+
+  const sortPosts = (sort) => {
+    setSelectedSort(sort)
   }
 
   return (
     <div className="App">
-      <form>
-        {/*Керований компонент*/}
+      <PostForm create={createPost}/>
+      <hr style={{margin: '15px 0'}}/>
+      <div>
         <MyInput
-          value = {post.title}
-          onChange = {e => setPost({...post, title: e.target.value})}
-          type="text"
-          placeholder="назва посту"/>
-        {/*Некерований компонент, через Ref*/}
-        {/*<MyInput*/}
-        {/*  ref={bodyInputRef}*/}
-        {/*  type="text"*/}
-        {/*  placeholder="опис посту"/>*/}
-        <MyInput
-          value={post.body}
-          onChange = {e => setPost({...post, body: e.target.value})}
-          type="text"
-          placeholder="опис посту"/>
-        <MyButton onClick={addNewPost}>Додати пост</MyButton>
-      </form>
-      <PostList posts = {posts} title="Список постів 1"/>
+          value = {searchQuery}
+          onChange = {e => setSearchQuery(e.target.value)}
+          placeholder="Search..."
+        />
+        <MySelect
+          defaultValue="Sorting by..."
+          value = {selectedSort}
+          onChange={sortPosts}
+          options={[
+            {value: 'title', name: 'By name'},
+            {value: 'body', name: 'By content'},
+          ]}
+        />
+      </div>
+      {posts.length !== 0
+        ? <PostList remove={removePost} posts={sortedPosts} title="Список постів 1"/>
+        : <h2>posts not found!</h2>
+      }
     </div>
   );
 }
