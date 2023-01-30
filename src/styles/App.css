@@ -1,0 +1,21 @@
+.remove-btn {
+  margin-right: 0.5rem;
+}
+
+.item-enter {
+  transition: 500ms ease-in;
+  transform: translateX(-350px);
+}
+.item-enter-active {
+  transform: translateX(0px);
+  transition: 500ms ease-in;
+}
+.item-exit {
+  transition: 500ms ease-in;
+  opacity: 1;
+}
+.item-exit-active {
+  transform: translateX(-350px);
+  opacity: 0;
+  transition: 500ms ease-in;
+}

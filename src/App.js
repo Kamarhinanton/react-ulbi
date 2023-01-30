@@ -1,11 +1,10 @@
 import React, {useMemo, useState} from "react";
 import MyButton from "./components/UI/button/MyButton";
-import MyInput from "./components/UI/input/MyInput";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
-import MySelect from "./components/UI/select/MySelect";
 import PostFilter from "./components/PostFilter";
 import MyModal from "./components/UI/MyModal/MyModal";
+import "./styles/App.css";
 
 function App() {
   const [posts, setPosts] = useState([
@@ -37,15 +36,6 @@ function App() {
   const removePost = (post) => {
     setPosts(posts.filter(p => p.id !== post.id))
   }
-  // const [title, setTitle] = useState('')
-  // const [body, setBody] = useState('')
-
-
-  // const bodyInputRef = useRef();
-  // const addNewPost = (e) => {
-  //   e.preventDefault()
-  //   console.log(bodyInputRef.current.value)
-  // }
 
   return (
     <div className="App">
