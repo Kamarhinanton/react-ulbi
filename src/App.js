@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import MyButton from "./components/UI/button/MyButton";
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
@@ -6,17 +6,23 @@ import PostFilter from "./components/PostFilter";
 import MyModal from "./components/UI/MyModal/MyModal";
 import "./styles/App.css";
 import {usePosts} from "./hooks/usePosts";
+import PostService from "./API/PostSerice";
+import {useFetching} from "./hooks/useFetching";
 
 function App() {
-  const [posts, setPosts] = useState([
-    {id: 1, title: 'b ', body: 'c'},
-    {id: 2, title: 'c', body: 'a'},
-    {id: 3, title: 'a', body: 'b'}
-  ])
+  const [posts, setPosts] = useState([])
 
   const [filter, setFilter] = useState({sort: '', query: ''})
   const [modal, setModal] = useState(false)
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+  const [fetchPosts, isPostsLoading, postError] =  useFetching(async() => {
+    const posts = await PostService.getAll()
+    setPosts(posts)
+  })
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -29,7 +35,8 @@ function App() {
 
   return (
     <div className="App">
-      <MyButton  onClick={() => setModal(true)}>
+      <button onClick={fetchPosts}>get posts</button>
+      <MyButton onClick={() => setModal(true)}>
         Create user
       </MyButton>
       <MyModal visible={modal} setVisible={setModal}>
@@ -40,7 +47,14 @@ function App() {
         setFilter={setFilter}
         filter={filter}
       />
-      <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Список постів 1"/>
+      {postError &&
+        <h1>Error{postError}</h1>
+      }
+      {
+        isPostsLoading
+          ? <h2>Loading...</h2>
+          : <PostList remove={removePost} posts={sortedAndSearchedPosts} title="Список постів 1"/>
+      }
     </div>
   );
 }
