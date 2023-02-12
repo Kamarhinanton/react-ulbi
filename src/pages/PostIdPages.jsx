@@ -36,7 +36,7 @@ const PostIdPages = () => {
           ? <div>Loading...</div>
           : <div>
             {comments.map(com =>
-            <div>
+            <div key={com.id}>
               <h5>
                 {com.email}
               </h5>
